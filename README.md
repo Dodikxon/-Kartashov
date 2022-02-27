@@ -1,6 +1,6 @@
 # -Kartashov
 Для того чтобы воспользоваться playbook`ом нужно:
-1. Дописать в файле /etc/ansible/hosts в конце :
+1. Дописать в файле /etc/ansible/hosts (в конце) :
 
 Project_1 ansible_user=root ansible_host=192.168.201.10 ansible_ssh_pass=toortoor
 
