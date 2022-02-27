@@ -3,7 +3,9 @@
 1. Дописать в файле /etc/ansible/hosts в конце :
 
 Project_1 ansible_user=root ansible_host=192.168.201.10 ansible_ssh_pass=toortoor
+
 Project_2 ansible_user=root ansible_host=192.168.201.20 ansible_ssh_pass=toortoor
+
 Project_3 ansible_user=root ansible_host=192.168.201.30 ansible_ssh_pass=toortoor
 
 2. Загрузить playbook в /etc/ansible/
