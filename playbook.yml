@@ -1,0 +1,90 @@
+---
+- hosts: all
+  become: true
+  become_user: root
+  tasks:
+  -name: update apt repo and cache on all
+  apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+  
+  -name: upgrade all packages on servers
+  apt: upgrade=dist force_apt_get=yes
+  
+  - name: Install curl
+    ansible.builtin.apt:
+     name: "curl"
+     state: "present"
+     update_cache: true
+     
+  - name: install docker
+    ansible.builtin.apt:
+        name: "docker"
+        state:  "present"
+        update_cache: "true"
+        
+  - name: install ufw
+    ansible.builtin.apt:
+        name: "ufw"
+        state: "present"
+        update_cache: true
+        
+  - name: start ufw
+    ansible.builtin.service:
+        name: "ufw"
+        state: started
+        
+  - name: firewall 80/tcp
+    ansible.posix.firewalld:
+        zone: public
+        port: 80/tcp
+        permanent: yes
+        state: enabled
+        
+  - name: firewall 8080/tcp
+        zone: public
+        port: 8080/tcp
+        permanent: yes
+        state: enabled
+        
+  - name: firewall 1834/tcp
+        zone: public
+        port: 1834/tcp
+        permanent: yes
+        state: enabled
+        
+  - name: restart firewalld
+    ansible.builtin.service:
+        name: firewalld
+        state: restarted
+  - name: create directory
+    file:
+        path: /skillcloud-nginx
+        state: directory
+  - name: copy files
+    ansible.builtin.copy:
+        src: /root/wsr-skillcloud/index.html
+        dest: /root/wsr-skillcloud-nginx/
+        src: /root/wsr-skillcloud/nginx.conf
+        dest: /root/wsr-skillcloud-nginx/
+        src: /root/wsr-skillcloud/Dockerfile-balance
+        dest: /root/wsr-skillcloud-nginx/
+        src: /root/wsr-skillcloud/Dockerfile-site
+        dest: /root/wsr-skillcloud-nginx/
+        src: /root/wsr-skillcloud/docker-compose.sh
+        dest: /root/wsr-skillcloud-nginx/
+  - name: restart ufw
+    ansible.builtin.service:
+        name: ufw
+        state: restarted
+  - name: setup ssh port
+    ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#Port'
+        line: Port 1834
+  - name: restart sshd
+    ansible.builtin.service:
+        name: sshd
+        state: restarted
+        
+  - name: reboot systems
+    ansible.builtin.reboot:
+    
